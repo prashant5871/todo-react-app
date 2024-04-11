@@ -39,6 +39,18 @@ function App() {
       setTodos(newToDos);
   }
 
+  const handleConditionChange =(e,id) => {
+      let index = todos.findIndex(item => item.id === id);
+      console.log("index is : " + index)
+      let newTodos = todos.filter(item => item.id !== id);
+      let singleTodo = todos[index];
+      console.log(singleTodo.isComplete)
+      singleTodo.isComplete = !singleTodo.isComplete;
+      //Here when I remove above line and set below as !singleTodo.isComplete then it gives wrong , but why ? 
+      setTodos([...newTodos,{"id":id,"todo":singleTodo.todo,"isComplete":singleTodo.isComplete}])
+      console.log(todos)
+  }
+
   return (
     <>
       {/* ************ Navbar start ******************** */}
@@ -87,8 +99,8 @@ function App() {
             {todos.map((item, index) => {
               return <div key={item.id} className="todo flex justify-between my-3 p-3 bg-green-300 w-full">
                 <div className="left flex gap-3 text-lg items-center justify-center">
-                  <input type="checkbox" name="" value={item.isComplete} />
-                  <div className="description"><p>{item.todo}</p></div>
+                  <input onChange={(e)=>{handleConditionChange(e,item.id)}} type="checkbox" name="" value={item.isComplete} />
+                  <div className={item.isComplete?"line-through":""}><p>{item.todo}</p></div>
                 </div>
                 <div className="right flex gap-4">
                   <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700' onClick={(event) => {handleUpdate(event,item.id)}}>Update</button>
