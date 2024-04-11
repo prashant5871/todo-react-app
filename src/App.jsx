@@ -1,12 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './output.css'
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
-  const [count, setCount] = useState(0)
   const [todo, setTodo] = useState("")
   const [todos, setTodos] = useState([])
+
+  useEffect(() => {
+    // setTodos(JSON.parse(localStorage.getItem('myTodo')))
+    const data = localStorage.getItem('myTodo');
+    console.log("data is  : " + data)
+    if (data) {
+      setTodos(JSON.parse(data));
+      console.log("all todos are : " ,JSON.parse(data))
+    }
+  },[])
+
+
+  const storeToLocalStorage = (t) => {
+    let myTodos = [...todos]
+    localStorage.setItem('myTodo', JSON.stringify(t))
+  }
 
   const handleChange = (event) => {
     setTodo(event.target.value)
@@ -14,7 +29,7 @@ function App() {
   }
 
   const saveTodo = (e) => {
-    if(todo.trim() == ""){
+    if (todo.trim() == "") {
       setTodo("");
       return;
     }
@@ -22,33 +37,38 @@ function App() {
     setTodos(newTodos);
     setTodo("")
     console.log(newTodos)
+    storeToLocalStorage(newTodos);
   }
 
-  const handleUpdate = (e,id) => {
-    let toUpdateTodo = todos.findIndex(item => item.id===id);
+  const handleUpdate = (e, id) => {
+    let toUpdateTodo = todos.findIndex(item => item.id === id);
     console.log(toUpdateTodo);
 
     setTodo(todos[toUpdateTodo].todo)
-    let newTodos = todos.filter(item=>item.id!==id)
+    let newTodos = todos.filter(item => item.id !== id)
     setTodos(newTodos)
+    storeToLocalStorage(newTodos);
   }
 
-  const handleDelete = (e,id)=>{
+  const handleDelete = (e, id) => {
     let newToDos = todos.filter(item => item.id !== id);
-    if(confirm("Are you sure you want to remove this task from To Do list ? "))
+    if (confirm("Are you sure you want to remove this task from To Do list ? ")) {
       setTodos(newToDos);
+      storeToLocalStorage(newToDos);
+    }
   }
 
-  const handleConditionChange =(e,id) => {
-      let index = todos.findIndex(item => item.id === id);
-      console.log("index is : " + index)
-      let newTodos = todos.filter(item => item.id !== id);
-      let singleTodo = todos[index];
-      console.log(singleTodo.isComplete)
-      singleTodo.isComplete = !singleTodo.isComplete;
-      //Here when I remove above line and set below as !singleTodo.isComplete then it gives wrong , but why ? 
-      setTodos([...newTodos,{"id":id,"todo":singleTodo.todo,"isComplete":singleTodo.isComplete}])
-      console.log(todos)
+  const handleConditionChange = (e, id) => {
+    let index = todos.findIndex(item => item.id === id);
+    console.log("index is : " + index)
+    let newTodos = todos.filter(item => item.id !== id);
+    let singleTodo = todos[index];
+    console.log(singleTodo.isComplete)
+    singleTodo.isComplete = !singleTodo.isComplete;
+    //Here when I remove above line and set below as !singleTodo.isComplete then it gives wrong , but why ? 
+    setTodos([...newTodos, { "id": id, "todo": singleTodo.todo, "isComplete": singleTodo.isComplete }])
+    console.log(todos)
+    storeToLocalStorage([...todos]);
   }
 
   return (
@@ -99,12 +119,12 @@ function App() {
             {todos.map((item, index) => {
               return <div key={item.id} className="todo flex justify-between my-3 p-3 bg-green-300 w-full">
                 <div className="left flex gap-3 text-lg items-center justify-center">
-                  <input onChange={(e)=>{handleConditionChange(e,item.id)}} type="checkbox" name="" value={item.isComplete} />
-                  <div className={item.isComplete?"line-through":""}><p>{item.todo}</p></div>
+                  <input onChange={(e) => { handleConditionChange(e, item.id) }} type="checkbox" checked={item.isComplete} />
+                  <div className={item.isComplete ? "line-through" : ""}><p>{item.todo}</p></div>
                 </div>
                 <div className="right flex gap-4">
-                  <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700' onClick={(event) => {handleUpdate(event,item.id)}}>Update</button>
-                  <button onClick={(event)=>{handleDelete(event,item.id)}} className='border rounded-lg p-2 bg-red-800 text-white hover:bg-red-700'>delete</button>
+                  <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700' onClick={(event) => { handleUpdate(event, item.id) }}>Update</button>
+                  <button onClick={(event) => { handleDelete(event, item.id) }} className='border rounded-lg p-2 bg-red-800 text-white hover:bg-red-700'>delete</button>
                 </div>
               </div>
             })}
