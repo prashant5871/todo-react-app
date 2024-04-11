@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import './output.css'
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,9 +14,19 @@ function App() {
   }
 
   const saveTodo = (e) => {
-    let newTodos = [...todos, { todo, isComplete: false }]
+    let newTodos = [...todos, { "id": uuidv4(), todo, isComplete: false }]
     setTodos(newTodos);
+    setTodo("")
     console.log(newTodos)
+  }
+
+  const handleUpdate = (e,id) => {
+    let toUpdateTodo = todos.findIndex(item => item.id===id);
+    console.log(toUpdateTodo);
+
+    setTodo(todos[toUpdateTodo].todo)
+    let newTodos = todos.filter(item=>item.id!==id)
+    setTodos(newTodos)
   }
 
   return (
@@ -51,11 +62,11 @@ function App() {
           {/* heading for To Do list */}
           <h2 className='text-xl p-5 text-center'><span className='border border-white p-2 bg-blue-400'>Your Todos</span></h2>
 
-          {!todos.length && <div className="noItem m-3 text-lg font-bold">No tasks are available to show.</div> }
+          {!todos.length && <div className="noItem m-3 text-lg font-bold">No tasks are available to show.</div>}
 
 
           {/* Option for showing completed tasks */}
-          {todos.length!=0 && <div className="showOption flex gap-3 mt-1 mx-3 text-lg items-center">
+          {todos.length != 0 && <div className="showOption flex gap-3 mt-1 mx-3 text-lg items-center">
             <input type="checkbox" name="" id='condition' className='cursor-pointer' />
             <label htmlFor="condition" className='cursor-pointer'>Show completed tasks</label>
           </div>}
@@ -70,7 +81,7 @@ function App() {
                   <div className="description"><p>{item.todo}</p></div>
                 </div>
                 <div className="right flex gap-4">
-                  <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700'>Update</button>
+                  <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700' onClick={(event) => {handleUpdate(event,item.id)}}>Update</button>
                   <button className='border rounded-lg p-2 bg-red-800 text-white hover:bg-red-700'>delete</button>
                 </div>
               </div>
