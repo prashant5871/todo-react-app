@@ -14,6 +14,10 @@ function App() {
   }
 
   const saveTodo = (e) => {
+    if(todo.trim() == ""){
+      setTodo("");
+      return;
+    }
     let newTodos = [...todos, { "id": uuidv4(), todo, isComplete: false }]
     setTodos(newTodos);
     setTodo("")
@@ -27,6 +31,12 @@ function App() {
     setTodo(todos[toUpdateTodo].todo)
     let newTodos = todos.filter(item=>item.id!==id)
     setTodos(newTodos)
+  }
+
+  const handleDelete = (e,id)=>{
+    let newToDos = todos.filter(item => item.id !== id);
+    if(confirm("Are you sure you want to remove this task from To Do list ? "))
+      setTodos(newToDos);
   }
 
   return (
@@ -75,14 +85,14 @@ function App() {
           {/* All todo will be wrap in inside this container which is .todos */}
           <div className="todos">
             {todos.map((item, index) => {
-              return <div className="todo flex justify-between my-3 p-3 bg-green-300 w-full">
+              return <div key={item.id} className="todo flex justify-between my-3 p-3 bg-green-300 w-full">
                 <div className="left flex gap-3 text-lg items-center justify-center">
                   <input type="checkbox" name="" value={item.isComplete} />
                   <div className="description"><p>{item.todo}</p></div>
                 </div>
                 <div className="right flex gap-4">
                   <button className='border rounded-lg p-2 bg-green-800 text-white hover:bg-green-700' onClick={(event) => {handleUpdate(event,item.id)}}>Update</button>
-                  <button className='border rounded-lg p-2 bg-red-800 text-white hover:bg-red-700'>delete</button>
+                  <button onClick={(event)=>{handleDelete(event,item.id)}} className='border rounded-lg p-2 bg-red-800 text-white hover:bg-red-700'>delete</button>
                 </div>
               </div>
             })}
